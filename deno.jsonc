@@ -1,0 +1,13 @@
+{
+  "tasks": {
+    "start": "deno run -A main.ts",
+    "dev": "deno run -A --watch=src,public,pages,components,lib dev.ts"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+  },
+  "importMap": "./importMap.json",
+  "exclude": [".dist"]
+}
