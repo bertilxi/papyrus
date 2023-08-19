@@ -23,7 +23,9 @@ export type BlockProps<T = {}> = T & {
 export type Handler = (props: BlockProps<any>) => Promise<any>;
 
 function getHost() {
-  return environment["LOCAL"] ? "http://localhost:3000" : "https://papyrus.sh";
+  return environment["LOCAL"]
+    ? "http://localhost:3000"
+    : "https://papyrus.berti.sh";
 }
 
 export const client = {

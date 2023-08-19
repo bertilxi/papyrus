@@ -101,8 +101,6 @@ app.onError((error, c) => {
 });
 
 export async function start() {
-  console.clear();
-
   await initBlocks();
 
   await Deno.serve(

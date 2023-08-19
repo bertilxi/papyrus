@@ -8,7 +8,9 @@ export const blocksPath = path.join(root, "blocks");
 export const distBlocksPath = path.join(distPath, "blocks");
 
 function getHost() {
-  return environment["LOCAL"] ? "http://localhost:3000" : "https://papyrus.sh";
+  return environment["LOCAL"]
+    ? "http://localhost:3000"
+    : "https://papyrus.berti.sh";
 }
 
 export function getName(author: string, module: string, version = "") {
