@@ -1,0 +1,78 @@
+import { ContentLayout } from "./components/content-layout.tsx";
+
+export const config = {
+  layout: ContentLayout,
+};
+
+# WORK IN PROGRESS
+
+## Papyrus roadmap
+
+### Flow:
+
+- Create account
+  - social login -> firebase/clerk/etc
+  - magic link, email code
+- Create block
+- Use block
+  - rest api
+  - web ui
+  - in others blocks
+
+### Use cases:
+
+- website, blog, ecommerce
+- auth middleware
+- send notifications or emails
+- bot
+- thumbnail creator
+- document conversion
+- knowledge management
+- jupyter notebooks like
+
+### TODO:
+
+#### backend
+
+- [x] database
+- [x] storage
+- [x] user scopes
+- [x] folders
+- [x] layouts for content
+- [ ] validate module name
+- [ ] validate semantic version on create and on update
+- [ ] save block metadata in database
+- [ ] secrets and environment support
+- [ ] cron
+- [ ] private blocks - [link](https://deno.land/manual@v1.36.1/basics/modules/private)
+- [ ] json support for CMS
+- [ ] delete unused old block versions
+- [ ] cname support
+- [ ] draft versions
+- [ ] minify html
+- [ ] dev hmr websocket
+- [ ] prod twind
+
+#### frontend
+
+- [ ] auth -> clerk - [link](https://clerk.com/docs/quickstarts/get-started-with-create-react-app)
+- [ ] dashboard, block overview
+- [ ] create block page
+- [ ] view block page
+- [ ] edit block page
+- [ ] own run logs
+- [ ] block marketplace
+- [ ] format source code in editor and before submit
+- [ ] lint source code in editor
+- [ ] typecheck source code in editor
+- [ ] block flow ui
+
+#### concepts
+
+https://papyrus.sh/run/berti/hello-world@0.1.0
+https://papyrus.sh/berti/me -> https://berti.sh
+
+```ts
+import helloWorld from "https://papyrus.sh/s/berti/hello-world@0.1.0";
+const result = await helloWorld(args);
+```

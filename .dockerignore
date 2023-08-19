@@ -1,0 +1,5 @@
+# flyctl launch added from .gitignore
+**/.dist
+**/.env
+**/try.tsx
+fly.toml

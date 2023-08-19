@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700&display=swap");
+@import url("https://esm.sh/v130/monaco-editor@0.41.0/denonext/monaco-editor.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/github-dark.min.css");
+
+html,
+body {
+  font-family: "Epilogue", sans-serif;
+}
+
+.monaco-editor,
+.overflow-guard {
+  border-radius: 0.3rem;
+}
+
+.overflow-guard {
+  border: 2px solid #1b1d2b;
+}
+
+::selection {
+  background-color: #47a3f3;
+  color: #fefefe;
+}
+
+pre code.hljs {
+  padding: 0px;
+}
+
+.rehype-code-title {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  border-width: 1px;
+  border-bottom-width: 0px;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  border-color: var(--tw-prose-pre-bg);
+  background-color: rgb(24 24 27 / 1);
+}
+
+.rehype-code-title + pre {
+  margin-top: 0px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.prose .anchor {
+  position: absolute;
+  visibility: hidden;
+  text-decoration-line: none;
+  transition-delay: 50ms;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  margin-left: -1.2em;
+  padding-right: 0.3rem;
+  cursor: pointer;
+}
+
+.anchor:hover {
+  visibility: visible;
+}
+
+.prose a {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.prose .anchor:after {
+  content: "#";
+  color: rgb(165, 165, 165);
+}
+
+.prose *:hover > .anchor {
+  visibility: visible;
+}

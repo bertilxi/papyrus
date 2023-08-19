@@ -1,0 +1,124 @@
+import { ContentLayout } from "../components/content-layout.tsx";
+
+export const config = {
+  layout: ContentLayout,
+};
+
+# Papyrus documentation
+
+## Table of contents
+
+## What is it?
+
+Papyrus is a thin layer on top of the [Deno](https://deno.land) JavaScript runtime, that simplifies the development of web applications, servers and automations. You can build almost anything you want and have it in production effortlessly.
+
+## Why build it?
+
+As web developer and software engineer, the time goes by, you have ideas and you build a ton of things, some better than others. In the end solving the same problem over and over again stops being fun or challenging.
+
+Added to the complexity of choosing and maintaining some infrastructure for your projects.
+You end up slowing down the pace of your creativity and you lose focus of what really matters, the solution, the product.
+
+There are some other problems that also makes me doubt when starting a side project, for example:
+
+- How up to date are this libraries?
+- How robust and secure are the libraries I chose?
+- Would this cloud platform pricing scale with my project if it becomes commercial?
+- Will this cloud platform disappear sometime?
+- Will I have vendor lockin?
+
+> The main goal is to solve this problem, stop thinking about the tools and focus only on solving the problem you have.
+
+## How is it built?
+
+One of the goals of this project is having the smallest possible core and being able to build itself from that core, the same way a user would do for building their apps.
+
+The main web app in order to be built without having to use cloud resources, uses extra features like folder based routing and auto block generation, something that may be released as a cli in the future if it makes sense.
+
+Papyrus is built around the "Block" primitive, everything is a block, a block can be a:
+
+- Deno module -> `.ts` blocks
+- React component -> `.tsx` blocks
+- MDX page -> `.mdx` blocks
+
+### Deno modules (.ts blocks)
+
+You can both import or run modules internally or externally.
+
+#### Create modules
+
+You can create modules for being imported, executed or both.
+
+For being imported just export anything as you would do with any ESM.
+
+For execution there is a little convention to follow, an export default with an async function, thats it, you can receive anything and return anything.
+
+```typescript:berti/my-module.ts
+interface Props {
+  name: string;
+}
+
+export default async function main({ name }: Props) {
+  console.log(name);
+
+  return `Hello ${name}`;
+}
+```
+
+#### Importing modules
+
+When you create modules that will be imported in other typescript file, they act as any other Deno module, you can import any public module.
+
+```ts
+import myModule from "https://papyrus.sh/s/berti/my-module.ts";
+
+const result = await myModule({ name: "John" });
+```
+
+#### Running modules
+
+For running modules you can use the UI or the API or import them in other blocks
+
+```ts
+await fetch("https://papyrus.sh/run/berti/my-module.ts", {
+  method: "POST",
+  body: JSON.stringify({
+    name: "John",
+  }),
+})
+  .then((r) => r.json())
+  .then((r) => console.log(r));
+```
+
+### React components (.tsx blocks)
+
+For this blocks you can create them as pages or for reusing in other components.
+
+#### As pages
+
+In order to work, a config with `page = true` needs to be exported.
+
+By default the pages will be exported as static html, except an interactive feature is used and the platform detects it, currently the detection method is naive and it may fail, it will be improved in the future.
+
+In case you want to use client side JavaScript you can set `interactive = true` in the config;
+
+```tsx
+export const config = {
+  page: true,
+  interactive: true,
+};
+
+export default function Home() {
+  return <div>Hello world</div>;
+}
+```
+
+#### As components
+
+The same as for modules, you can export whatever you want.
+
+### Mdx pages (.mdx blocks)
+
+This type of block its useful for documentation and simple interactive content.
+
+You can write markdown and markdown react as you like, import other components, set static or interactive, your choice.

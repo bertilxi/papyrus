@@ -1,22 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
 import { ScrollText, PackagePlus } from "lucide-react";
-import { Editor } from "../components/editor.tsx";
-import { Layout } from "../components/layout.tsx";
+import { Editor } from "./components/editor.tsx";
+import { Layout } from "./components/layout.tsx";
 
 export const interactive = true;
+export const page = true;
 
 function Data() {
-  const query = useQuery({
-    queryKey: ["todos"],
-    queryFn: () => fetch("/script").then((r) => r.json()),
-  });
+  // const query = useQuery({
+  //   queryKey: ["todos"],
+  //   queryFn: () => fetch("/script").then((r) => r.json()),
+  // });
 
-  return <p>{JSON.stringify(query.data)}</p>;
+  // return <p>{JSON.stringify(query.data)}</p>;
+
+  return null;
 }
 
 function Sidebar() {
   return (
-    <div className="fixed bottom-0 left-0 z-40 w-[50px] md:w-[250px] bg-[#222436] border-r-2 border-r-[#1b1d2b] text-slate-100">
+    <div className="fixed bottom-0 left-0 z-40 w-[50px] md:w-[250px] bg-[#222436] border-r-2 border-r-[#1b1d2b] text-zinc-100">
       <div className="min-h-screen flex flex-col justify-between gap-4 pt-6">
         <div className="flex flex-col">
           <a className="hidden md:block px-6">Papyrus</a>
@@ -25,7 +27,7 @@ function Sidebar() {
           </a>
         </div>
 
-        <div className="flex flex-col transition-all hover:bg-slate-500 cursor-pointer py-2">
+        <div className="flex flex-col transition-all hover:bg-zinc-500 cursor-pointer py-2">
           <a className="hidden md:block px-6">Create</a>
 
           <a className="md:hidden mx-auto">
@@ -39,7 +41,7 @@ function Sidebar() {
 
 function Content() {
   return (
-    <div className="flex bg-[#2f334d] text-slate-100 w-full pl-[50px] md:pl-[250px] overflow-auto">
+    <div className="flex bg-[#2f334d] text-zinc-100 w-full pl-[50px] md:pl-[250px] overflow-auto">
       <div className="py-6 px-6 w-full mx-auto flex-1 prose prose-invert">
         <h2>New Script</h2>
 

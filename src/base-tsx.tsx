@@ -12,7 +12,17 @@ install(
   defineConfig({
     darkMode: "class",
     presets: [presetAutoprefix(), presetTailwind(), presetTypography()],
-  })
+    theme: {
+      container: {
+        center: true,
+        padding: "2rem",
+        screens: {
+          "2xl": "1400px",
+        },
+      },
+    },
+  }),
+  false
 );
 
 ReactDOM.hydrate(<Component />, document.getElementById("root") as HTMLElement);
