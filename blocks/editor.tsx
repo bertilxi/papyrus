@@ -55,7 +55,7 @@ function Content() {
   );
 }
 
-export default function Home() {
+export default function EditorPage() {
   return (
     <Layout>
       <div className="flex flex-col min-h-screen">

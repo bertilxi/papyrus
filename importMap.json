@@ -18,6 +18,8 @@
     "prettier": "https://esm.sh/prettier@3.0.1",
     "prettier/": "https://esm.sh/prettier@3.0.1/",
 
-    "lucide-react": "https://esm.sh/lucide-react@0.268.0?external=react"
+    "lucide-react": "https://esm.sh/lucide-react@0.268.0?external=react",
+    "@clerk/clerk-react": "https://esm.sh/@clerk/clerk-react@4.23.2?external=react",
+    "clsx": "https://esm.sh/clsx@2.0.0"
   }
 }

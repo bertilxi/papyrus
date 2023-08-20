@@ -1,8 +1,7 @@
 import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
 import { serveStatic } from "https://deno.land/x/hono@v3.4.1/middleware.ts";
 import { Hono } from "https://deno.land/x/hono@v3.4.1/mod.ts";
-import { initBlocks } from "./base.ts";
-import { createBlock, getBlock, guessBlock, runBlock } from "./core.tsx";
+import { createBlock, guessBlock, runBlock } from "./core.tsx";
 import { storage } from "./storage.ts";
 import { getHeaderRecord, getName } from "./utils.ts";
 
@@ -101,8 +100,6 @@ app.onError((error, c) => {
 });
 
 export async function start() {
-  await initBlocks();
-
   await Deno.serve(
     {
       port: 3000,

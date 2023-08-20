@@ -1,7 +1,8 @@
 {
   "tasks": {
     "start": "deno run -A main.ts",
-    "dev": "deno run -A dev.ts"
+    "dev": "WATCH=true deno run -A --watch=src,blocks dev.ts",
+    "init": "deno run -A init.ts"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

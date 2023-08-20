@@ -1,10 +1,18 @@
+import { ClerkProvider } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
+import { ThemeProvider } from "./theme.tsx";
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: PropsWithChildren) {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <ThemeProvider>
+      <ClerkProvider publishableKey="pk_test_bWF0dXJlLWZsb3VuZGVyLTIxLmNsZXJrLmFjY291bnRzLmRldiQ">
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </ClerkProvider>
+    </ThemeProvider>
   );
 }

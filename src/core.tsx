@@ -1,36 +1,17 @@
-import { inline, install, defineConfig as twConfig } from "@twind/core";
-import presetAutoprefix from "@twind/preset-autoprefix";
-import presetTailwind from "@twind/preset-tailwind";
-import presetTypography from "@twind/preset-typography";
+import { inline } from "@twind/core";
 import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
 import { build as esbuild } from "https://deno.land/x/esbuild@v0.19.1/mod.js";
+import { baseHtml, baseTsx, buildMdx, getImportMap } from "./content.tsx";
 import { storage } from "./storage.ts";
 import { distBlocksPath, getName } from "./utils.ts";
-import { baseHtml, baseTsx, buildMdx } from "./content.tsx";
-
-install(
-  twConfig({
-    darkMode: "class",
-    presets: [presetAutoprefix(), presetTailwind(), presetTypography()],
-    theme: {
-      container: {
-        center: true,
-        padding: "2rem",
-        screens: {
-          "2xl": "1400px",
-        },
-      },
-    },
-  }),
-  false
-);
+import { environment } from "./environment.ts";
 
 async function bundle(filePath: string, code: string) {
   const { imports } = await getImportMap();
 
   await esbuild({
-    minify: true,
-    treeShaking: true,
+    minify: !environment.WATCH,
+    treeShaking: !environment.WATCH,
     bundle: true,
     target: ["chrome109", "edge112", "firefox102", "safari16"],
     format: "esm",
@@ -42,7 +23,7 @@ async function bundle(filePath: string, code: string) {
       loader: "tsx",
     },
     external: Object.keys(imports),
-    outfile: filePath + ".js",
+    outfile: filePath + ".bundle.js",
   });
 }
 
@@ -86,38 +67,37 @@ export async function createContent({
   const fileName = module.replace(extension, "");
 
   await Deno.writeTextFile(
-    path.join(distBlocksPath, author, `${fileName}.ts`),
+    path.join(distBlocksPath, author, `${fileName}.source.ts`),
     mdxsource
   );
   const { default: Component, config = {} } = await import(
-    path.join(distBlocksPath, author, `${fileName}.ts`) + `?ts=${Date.now()}`
+    path.join(distBlocksPath, author, `${fileName}.source.ts`) +
+      (environment.WATCH ? `?ts=${Date.now()}` : "")
   );
   const { interactive, layout } = config;
 
   const isInteractive =
     interactive ??
     (await inferInteractive(
-      path.join(distBlocksPath, author, `${fileName}.ts`)
+      path.join(distBlocksPath, author, `${fileName}.source.ts`)
     ));
 
   if (isInteractive) {
     await bundle(
       path.join(distBlocksPath, author, fileName),
-      await baseTsx(`${fileName}.ts`)
+      await baseTsx(`${fileName}.source.ts`)
     );
   }
 
   const script = isInteractive
     ? `<script type="module">${await Deno.readTextFile(
-        path.join(distBlocksPath, author, `${fileName}.js`)
+        path.join(distBlocksPath, author, `${fileName}.bundle.js`)
       )}</script>`
     : "";
 
   const html = inline(await baseHtml(script, Component, layout));
 
   await storage.set(name, html);
-
-  return [`${fileName}.html`, html] as [string, string];
 }
 
 export async function createPage({
@@ -130,9 +110,13 @@ export async function createPage({
   const extension = path.extname(module);
   const fileName = module.replace(extension, "");
 
-  await Deno.writeTextFile(path.join(distBlocksPath, author, module), source);
+  await Deno.writeTextFile(
+    path.join(distBlocksPath, author, `${fileName}.source.tsx`),
+    source
+  );
   const { default: Component, config = {} } = await import(
-    path.join(distBlocksPath, author, module) + `?ts=${Date.now()}`
+    path.join(distBlocksPath, author, `${fileName}.source.tsx`) +
+      (environment.WATCH ? `?ts=${Date.now()}` : "")
   );
   const { interactive, page, layout } = config;
 
@@ -141,31 +125,31 @@ export async function createPage({
   }
 
   if (!Component) {
-    return ["", ""] as [string, string];
+    return;
   }
 
   const isInteractive =
     interactive ??
-    (await inferInteractive(path.join(distBlocksPath, author, module)));
+    (await inferInteractive(
+      path.join(distBlocksPath, author, `${fileName}.source.tsx`)
+    ));
 
   if (isInteractive) {
     await bundle(
       path.join(distBlocksPath, author, fileName),
-      await baseTsx(module)
+      await baseTsx(`${fileName}.source.tsx`)
     );
   }
 
   const script = isInteractive
     ? `<script type="module">${await Deno.readTextFile(
-        path.join(distBlocksPath, author, `${fileName}.js`)
+        path.join(distBlocksPath, author, `${fileName}.bundle.js`)
       )}</script>`
     : "";
 
   const html = inline(await baseHtml(script, Component, layout));
 
   await storage.set(name, html);
-
-  return [`${fileName}.html`, html] as [string, string];
 }
 
 export async function createModule({
@@ -177,8 +161,6 @@ export async function createModule({
   const name = getName(author, module, version);
 
   await storage.set(name, source);
-
-  return [module, source] as [string, string];
 }
 
 export function createBlock({
@@ -186,7 +168,7 @@ export function createBlock({
   module,
   version,
   source,
-}: CreateBlockOptions): Promise<[string, string]> {
+}: CreateBlockOptions) {
   const extension = path.extname(module);
 
   const isPage = [".tsx", ".jsx"].includes(extension);
@@ -258,8 +240,4 @@ export function runBlock({ url, data, options }: RunBlockOptions) {
 
     worker.postMessage({ url, data, ...options });
   });
-}
-
-function getImportMap(): { imports: any } | PromiseLike<{ imports: any }> {
-  throw new Error("Function not implemented.");
 }

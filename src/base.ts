@@ -1,7 +1,8 @@
 import { debounce } from "https://deno.land/std@0.198.0/async/debounce.ts";
 import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
 import { createBlock } from "./core.tsx";
-import { blocksPath, distBlocksPath, mkdirp, root } from "./utils.ts";
+import { blocksPath, distBlocksPath, mkdirp } from "./utils.ts";
+import { environment } from "./environment.ts";
 
 const rootDistPath = path.join(distBlocksPath, "internal");
 
@@ -33,6 +34,7 @@ async function iterEntries(dirPath: string, distPath: string) {
     const isValidFile = entry.isFile && isValidExtension(entry.name);
 
     if (isValidFile) {
+      !environment.WATCH && console.log(path.join(dirPath, entry.name));
       await createLocalBlock(path.join(dirPath, entry.name));
     }
   }
@@ -64,11 +66,11 @@ export async function initBlocks() {
   await iterEntries(blocksPath, rootDistPath).catch(console.error);
 }
 
-const rerfesh = debounce(async (filePath: string) => {
+const refresh = debounce(async (filePath: string) => {
   if (filePath.startsWith(blocksPath) && isValidExtension(filePath)) {
-    await createLocalBlock(filePath);
+    await initBlocks();
 
-    console.log(" 🔁️ updated", filePath.replace(root, ""));
+    console.log(" 🔁️ updated");
   }
 }, 300);
 
@@ -82,6 +84,6 @@ export async function watch() {
       continue;
     }
 
-    rerfesh(path.resolve(filePath));
+    refresh(path.resolve(filePath));
   }
 }
