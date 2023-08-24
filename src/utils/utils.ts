@@ -8,7 +8,7 @@ export const blocksPath = path.join(root, "blocks");
 export const distBlocksPath = path.join(distPath, "blocks");
 
 function getHost() {
-  return environment["LOCAL"]
+  return environment.WATCH
     ? "http://localhost:3000"
     : "https://papyrus.berti.sh";
 }

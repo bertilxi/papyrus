@@ -17,6 +17,7 @@ const client = new S3Client({
 
 async function get(key: string) {
   const name = new URL(key).pathname;
+  const isInternal = name.startsWith("/s/internal/");
   const content = await Deno.readTextFile(path.join(storageRoot, name)).catch(
     () => ""
   );
@@ -25,7 +26,7 @@ async function get(key: string) {
     return content;
   }
 
-  if (isWatch) {
+  if (isWatch || isInternal) {
     return "";
   }
 
@@ -44,12 +45,12 @@ async function get(key: string) {
 
 async function set(key: string, content: string) {
   const name = new URL(key).pathname;
-
+  const isInternal = name.startsWith("/s/internal/");
   const localPath = path.join(storageRoot, name);
   await mkdirp(path.dirname(localPath));
   await Deno.writeTextFile(localPath, content);
 
-  if (isWatch) {
+  if (isWatch || isInternal) {
     return;
   }
 

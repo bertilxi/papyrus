@@ -6,7 +6,6 @@ import rehypeHighlight from "https://esm.sh/rehype-highlight@6.0.0";
 import rehypeSlug from "https://esm.sh/rehype-slug@5.1.0";
 import remarkGfm from "https://esm.sh/remark-gfm@3.0.1";
 import remarkToc from "https://esm.sh/remark-toc@8.0.1";
-import htmlMinify from "npm:html-minifier";
 import type { FC } from "react";
 import { renderToString } from "react-dom/server";
 import { environment } from "./environment.ts";
@@ -97,12 +96,5 @@ export const baseHtml = async ({
       .replace("${refresh}", environment.WATCH ? await refreshClient() : "")
   );
 
-  return environment.WATCH
-    ? html
-    : htmlMinify.minify(html, {
-        removeComments: true,
-        collapseWhitespace: true,
-        minifyCSS: true,
-        minifyJS: true,
-      });
+  return html;
 };

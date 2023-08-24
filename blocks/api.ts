@@ -37,7 +37,7 @@ class Api {
     module: string;
     source: string;
   }) {
-    return post<Result>(`/s/${author}/${module}`, { source });
+    return post<Result>(`/api/block/${author}/${module}`, { source });
   }
 }
 
