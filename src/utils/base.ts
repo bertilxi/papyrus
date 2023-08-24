@@ -1,8 +1,7 @@
-import { debounce } from "https://deno.land/std@0.198.0/async/debounce.ts";
 import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
 import { createBlock } from "./core.tsx";
-import { blocksPath, distBlocksPath, mkdirp } from "./utils.ts";
 import { environment } from "./environment.ts";
+import { blocksPath, distBlocksPath, mkdirp } from "./utils.ts";
 
 const rootDistPath = path.join(distBlocksPath, "internal");
 
@@ -61,29 +60,11 @@ async function copyBlocks(dirPath: string, distPath: string) {
 }
 
 export async function initBlocks() {
+  console.time("copyBlocks");
   await copyBlocks(blocksPath, rootDistPath).catch(console.error);
+  console.timeEnd("copyBlocks");
 
+  console.time("iterEntries");
   await iterEntries(blocksPath, rootDistPath).catch(console.error);
-}
-
-const refresh = debounce(async (filePath: string) => {
-  if (filePath.startsWith(blocksPath) && isValidExtension(filePath)) {
-    await initBlocks();
-
-    console.log(" 🔁️ updated");
-  }
-}, 300);
-
-export async function watch() {
-  const watcher = Deno.watchFs(["."]);
-
-  for await (const event of watcher) {
-    const [filePath] = event.paths;
-
-    if (filePath.includes(".dist") || ["any", "access"].includes(event.kind)) {
-      continue;
-    }
-
-    refresh(path.resolve(filePath));
-  }
+  console.timeEnd("iterEntries");
 }

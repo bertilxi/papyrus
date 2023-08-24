@@ -1,10 +1,8 @@
-import { initBlocks } from "./src/base.ts";
-import { start } from "./src/server.tsx";
+import { start } from "./src/api/main.ts";
+import { initBlocks } from "./src/utils/base.ts";
 
 if (import.meta.main) {
   try {
-    console.clear();
-
     await initBlocks();
 
     await start();

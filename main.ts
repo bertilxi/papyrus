@@ -1,4 +1,4 @@
-import { start } from "./src/server.tsx";
+import { start } from "./src/api/main.ts";
 
 if (import.meta.main) {
   try {

@@ -35,3 +35,11 @@ export function getHeaderRecord(headers: Headers) {
   }
   return headerMap;
 }
+
+export function getModuleName(routePath: string, base: string) {
+  const [author, ...moduleParts] = routePath.replace(base, "").split("/");
+  const fullModule = moduleParts.join("/");
+  const [module, version] = fullModule.split("@");
+
+  return { author, module, version };
+}

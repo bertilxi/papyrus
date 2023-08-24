@@ -1,4 +1,3 @@
-import { inline } from "@twind/core";
 import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
 import { build as esbuild } from "https://deno.land/x/esbuild@v0.19.1/mod.js";
 import { baseHtml, baseTsx, buildMdx, getImportMap } from "./content.tsx";
@@ -25,26 +24,6 @@ async function bundle(filePath: string, code: string) {
     external: Object.keys(imports),
     outfile: filePath + ".bundle.js",
   });
-}
-
-async function inferInteractive(filePath: string) {
-  const source = await Deno.readTextFile(filePath);
-  const keywords = [
-    "useCallback",
-    "useContext",
-    "useEffect",
-    "useMemo",
-    "useReducer",
-    "useRef",
-    "useState",
-    "onClick",
-    "onChange",
-  ];
-
-  return keywords.reduce(
-    (flag, keyword) => flag || source.includes(keyword),
-    false
-  );
 }
 
 interface CreateBlockOptions {
@@ -74,13 +53,9 @@ export async function createContent({
     path.join(distBlocksPath, author, `${fileName}.source.ts`) +
       (environment.WATCH ? `?ts=${Date.now()}` : "")
   );
-  const { interactive, layout } = config;
+  const { interactive, layout, title, description, keywords } = config;
 
-  const isInteractive =
-    interactive ??
-    (await inferInteractive(
-      path.join(distBlocksPath, author, `${fileName}.source.ts`)
-    ));
+  const isInteractive = interactive ?? true;
 
   if (isInteractive) {
     await bundle(
@@ -95,7 +70,14 @@ export async function createContent({
       )}</script>`
     : "";
 
-  const html = inline(await baseHtml(script, Component, layout));
+  const html = await baseHtml({
+    script,
+    Component,
+    Layout: layout,
+    title,
+    description,
+    keywords,
+  });
 
   await storage.set(name, html);
 }
@@ -118,7 +100,7 @@ export async function createPage({
     path.join(distBlocksPath, author, `${fileName}.source.tsx`) +
       (environment.WATCH ? `?ts=${Date.now()}` : "")
   );
-  const { interactive, page, layout } = config;
+  const { interactive, page, layout, title, description, keywords } = config;
 
   if (!page) {
     return createModule({ author, module, version, source });
@@ -128,11 +110,7 @@ export async function createPage({
     return;
   }
 
-  const isInteractive =
-    interactive ??
-    (await inferInteractive(
-      path.join(distBlocksPath, author, `${fileName}.source.tsx`)
-    ));
+  const isInteractive = interactive ?? true;
 
   if (isInteractive) {
     await bundle(
@@ -147,7 +125,14 @@ export async function createPage({
       )}</script>`
     : "";
 
-  const html = inline(await baseHtml(script, Component, layout));
+  const html = await baseHtml({
+    script,
+    Component,
+    Layout: layout,
+    title,
+    description,
+    keywords,
+  });
 
   await storage.set(name, html);
 }
@@ -184,8 +169,6 @@ export function createBlock({
   if (isContent) {
     return createContent({ author, module, version, source });
   }
-
-  return Promise.resolve(["", ""]);
 }
 
 interface GetBlockOptions {

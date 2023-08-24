@@ -3,7 +3,7 @@ import { S3Client } from "https://deno.land/x/s3_lite_client@0.6.1/mod.ts";
 import { environment } from "./environment.ts";
 import { distPath, mkdirp } from "./utils.ts";
 
-const isLocal = !!environment["LOCAL"];
+const isWatch = !!environment.WATCH;
 
 const storageRoot = path.join(distPath, "storage");
 
@@ -25,7 +25,7 @@ async function get(key: string) {
     return content;
   }
 
-  if (isLocal) {
+  if (isWatch) {
     return "";
   }
 
@@ -49,7 +49,7 @@ async function set(key: string, content: string) {
   await mkdirp(path.dirname(localPath));
   await Deno.writeTextFile(localPath, content);
 
-  if (isLocal) {
+  if (isWatch) {
     return;
   }
 

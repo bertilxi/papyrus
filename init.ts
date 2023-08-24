@@ -1,4 +1,4 @@
-import { initBlocks } from "./src/base.ts";
+import { initBlocks } from "./src/utils/base.ts";
 
 if (import.meta.main) {
   try {

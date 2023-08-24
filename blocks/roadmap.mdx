@@ -8,17 +8,6 @@ export const config = {
 
 ## Papyrus roadmap
 
-### Flow:
-
-- Create account
-  - social login -> firebase/clerk/etc
-  - magic link, email code
-- Create block
-- Use block
-  - rest api
-  - web ui
-  - in others blocks
-
 ### Use cases:
 
 - website, blog, ecommerce
@@ -39,7 +28,10 @@ export const config = {
 - [x] user scopes
 - [x] folders
 - [x] layouts for content
-- [ ] add html seo from reblog
+- [x] minify html
+- [x] add html seo from reblog
+- [x] prod twind
+- [x] dev refresh websocket
 - [ ] validate module name
 - [ ] validate semantic version on create and on update
 - [ ] save block metadata in database
@@ -50,13 +42,13 @@ export const config = {
 - [ ] delete unused old block versions
 - [ ] cname support
 - [ ] draft versions
-- [ ] minify html
-- [ ] dev hmr websocket
-- [ ] prod twind
+- [ ] improve css support
+- [ ] cloudflare cdn
 
 #### frontend
 
-- [ ] auth -> clerk - [link](https://clerk.com/docs/quickstarts/get-started-with-create-react-app)
+- [x] auth -> clerk - [link](https://clerk.com/docs/quickstarts/get-started-with-create-react-app)
+- [ ] responsive navbar
 - [ ] dashboard, block overview
 - [ ] create block page
 - [ ] view block page
@@ -70,8 +62,8 @@ export const config = {
 
 #### concepts
 
-https://papyrus.sh/run/berti/hello-world@0.1.0
-https://papyrus.sh/berti/me -> https://berti.sh
+- https://papyrus.sh/run/berti/hello-world@0.1.0
+- https://papyrus.sh/berti/me -> https://berti.sh
 
 ```ts
 import helloWorld from "https://papyrus.sh/s/berti/hello-world@0.1.0";

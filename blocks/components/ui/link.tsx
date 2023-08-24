@@ -17,6 +17,7 @@ export function Link({ href, children }: PropsWithChildren<{ href: string }>) {
 
   return (
     <a href={href} className="font-semibold group transition duration-300">
+      <span className="block max-w-0 h-0.5" />
       {children}
       <Underline active={href === path} />
     </a>

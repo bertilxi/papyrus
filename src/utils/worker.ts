@@ -16,7 +16,7 @@ for (const method of Object.keys(logger)) {
     logs.push(
       messages
         .map((m) => (typeof m === "object" ? JSON.stringify(m) : m))
-        .join(" ")
+        .join(" "),
     );
     // deno-lint-ignore ban-ts-comment
     // @ts-ignore
