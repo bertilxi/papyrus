@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import CodeEditor from "https://esm.sh/@uiw/react-textarea-code-editor@2.1.7";
 import { api } from "../api.ts";
 import { Layout } from "../components/layout.tsx";
 import { Navbar } from "../components/navbar.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { useUser } from "../user.ts";
-import Editor from "../components/editor.tsx";
+import { FunctionSquare, Book } from "lucide-react";
+import clsx from "clsx";
 
 export const config = {
   page: true,
@@ -12,78 +14,85 @@ export const config = {
   layout: Layout,
 };
 
+const blockTypeMap = {
+  ".ts": "Function",
+  ".tsx": "Page",
+  ".mdx": "Page",
+};
+
+const blockTypeStyleMap = {
+  ".ts": "bg-sky-500 text-sky-100",
+  ".tsx": "bg-indigo-500 text-indigo-100",
+  ".mdx": "bg-pink-500 text-pink-100",
+};
+
+function getExtension(module: string) {
+  const parts = module.split(".");
+  const extension = "." + parts[parts.length - 1];
+  return extension;
+}
+
+function getBlockType(module: string) {
+  return blockTypeMap[getExtension(module)] ?? "Block";
+}
+
+function getBlockStyle(module: string) {
+  return blockTypeStyleMap[getExtension(module)] ?? "bg-zinc-500 text-zinc-200";
+}
+
 export default function DashboardPage() {
   const user = useUser();
   const blocksQuery = useQuery({
     queryKey: ["findByAuthor", user.handle],
     queryFn: ({ queryKey }) => api.findByAuthor(queryKey[1]),
-    enabled: !!user?.id,
+    enabled: !!user?.id && !!user.handle,
   });
 
-  const params = new URLSearchParams(location.search);
-  const author = params.get("author") ?? "";
-  const module = params.get("module") ?? "";
-  const version = params.get("version") ?? "";
-
-  const blockQuery = useQuery({
-    queryKey: ["findByAuthor", author, module, version],
-    queryFn: ({ queryKey }) =>
-      api.findOne(queryKey[1], queryKey[2], queryKey[3]),
-    enabled: !!user?.id,
-  });
-
-  const blocks = blocksQuery.data?.result ?? [];
-
-  const selectedBlock = blockQuery.data?.result;
+  const blocks = blocksQuery.data?.result || [];
 
   return (
     <>
       <Navbar />
 
-      <section className="flex container mt-20">
-        <div className="flex flex-col shrink-0 pr-16 pb-8 gap-2">
-          <a href="/block/new">
-            <Button>Create block</Button>
+      <section className="flex flex-col container mt-20">
+        <div className="flex gap-2 justify-end">
+          <a href="/block/new-function">
+            <Button size="sm">
+              <FunctionSquare className="h-4 w-4 mr-2" />
+              Create function
+            </Button>
           </a>
 
-          {blocks?.map((block) => {
-            const isActive = block._id === selectedBlock?._id;
-
-            return (
-              <Button
-                variant={isActive ? "outline" : "ghost"}
-                size="sm"
-                onClick={() => {
-                  const params = new URLSearchParams([
-                    ["author", block.author],
-                    ["module", block.module],
-                    ["version", block.version],
-                  ]);
-                  const newUrl = new URL(
-                    `${location.origin}${location.pathname}?${params}`
-                  );
-
-                  location.href = newUrl;
-                }}
-              >
-                {block.module}
-              </Button>
-            );
-          })}
+          <a href="/block/new-page">
+            <Button size="sm">
+              <Book className="h-4 w-4 mr-2" />
+              Create page
+            </Button>
+          </a>
         </div>
 
-        <div className="w-full max-w-3xl mx-auto h-screen">
-          {selectedBlock?._id && (
-            <>
-              <div className="text-xl mb-4">
-                {selectedBlock?.module} @ {selectedBlock?.version}
-              </div>
+        <div className="">
+          {blocks?.map((block) => {
+            return (
+              <div className="py-4">
+                <div className="font-semibold flex gap-2 items-center">
+                  <span>{block.module}</span>
+                  {"@"}
+                  <span>{block.version}</span>
+                  <span
+                    className={clsx(
+                      "text-[10px] font-bold uppercase px-1 py-0.5 rounded-md",
+                      getBlockStyle(block.module)
+                    )}
+                  >
+                    {getBlockType(block.module)}
+                  </span>
+                </div>
 
-              <div className="h-[70%] pb-10">
-                <Editor value={selectedBlock?.source ?? ""} />
+                <p>{block.description}</p>
               </div>
-            </>
-          )}
+            );
+          })}
         </div>
       </section>
     </>

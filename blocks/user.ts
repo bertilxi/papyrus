@@ -11,5 +11,13 @@ export function useUser() {
     enabled: !!user?.id,
   });
 
-  return { id: user?.id, handle: meQuery.data?.result?.handle ?? "" };
+  if (meQuery.isSuccess) {
+    return {
+      id: user?.id,
+      handle: meQuery.data?.result?.handle ?? "",
+      isLoaded: true,
+    };
+  }
+
+  return { id: "", handle: "", isLoaded: false };
 }

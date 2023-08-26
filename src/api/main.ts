@@ -1,5 +1,9 @@
-import { getCookie } from "https://deno.land/x/hono@v3.4.1/middleware.ts";
-import { Hono } from "https://deno.land/x/hono@v3.4.1/mod.ts";
+import {
+  getCookie,
+  logger,
+} from "https://deno.land/x/hono@v3.5.4/middleware.ts";
+
+import { Hono } from "https://deno.land/x/hono@v3.5.4/mod.ts";
 import { clerk } from "../utils/clerk.ts";
 import { environment } from "../utils/environment.ts";
 import { blockApi } from "./block.ts";
@@ -7,6 +11,8 @@ import { Env } from "./common.ts";
 import { userApi } from "./user.ts";
 
 export const app = new Hono<Env>();
+
+app.use("*", logger());
 
 if (environment.WATCH) {
   const sockets: Set<WebSocket> = new Set();

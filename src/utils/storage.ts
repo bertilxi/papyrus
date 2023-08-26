@@ -3,73 +3,67 @@ import { S3Client } from "https://deno.land/x/s3_lite_client@0.6.1/mod.ts";
 import { environment } from "./environment.ts";
 import { distPath, mkdirp } from "./utils.ts";
 
-const isWatch = !!environment.WATCH;
+class Storage {
+  private storageRoot = path.join(distPath, "storage");
+  private client = new S3Client({
+    accessKey: environment["S3_ACCESS_KEY"],
+    secretKey: environment["S3_SECRET_KEY"],
+    endPoint: "s3.us-east-005.backblazeb2.com",
+    region: "us-east-005",
+    bucket: "fiber-fn",
+  });
 
-const storageRoot = path.join(distPath, "storage");
+  public async get(key: string) {
+    const name = new URL(key).pathname;
+    const isInternal = name.startsWith("/s/internal/");
 
-const client = new S3Client({
-  accessKey: environment["S3_ACCESS_KEY"],
-  secretKey: environment["S3_SECRET_KEY"],
-  endPoint: "s3.us-east-005.backblazeb2.com",
-  region: "us-east-005",
-  bucket: "fiber-fn",
-});
+    if (isInternal) {
+      const content = await Deno.open(path.join(this.storageRoot, name));
 
-async function get(key: string) {
-  const name = new URL(key).pathname;
-  const isInternal = name.startsWith("/s/internal/");
-  const content = await Deno.readTextFile(path.join(storageRoot, name)).catch(
-    () => ""
-  );
+      return content.readable;
+    }
 
-  if (content) {
-    return content;
+    return this.client.getObject(name).then((r) => r.body);
   }
 
-  if (isWatch || isInternal) {
-    return "";
+  public async getText(key: string) {
+    const name = new URL(key).pathname;
+    const isInternal = name.startsWith("/s/internal/");
+
+    if (isInternal) {
+      const content = await Deno.readTextFile(
+        path.join(this.storageRoot, name)
+      );
+
+      return content;
+    }
+
+    return this.client.getObject(name).then((r) => r.text());
   }
 
-  const remoteContent = await client.getObject(key).then(
-    (r) => r.text(),
-    () => ""
-  );
+  public async set(key: string, content: string) {
+    const name = new URL(key).pathname;
+    const isInternal = name.startsWith("/s/internal/");
 
-  const localPath = path.join(storageRoot, name);
+    if (isInternal) {
+      const localPath = path.join(this.storageRoot, name);
 
-  await mkdirp(path.dirname(localPath));
-  await Deno.writeTextFile(localPath, remoteContent);
+      await mkdirp(path.dirname(localPath));
+      await Deno.writeTextFile(localPath, content);
 
-  return remoteContent;
-}
+      return;
+    }
 
-async function set(key: string, content: string) {
-  const name = new URL(key).pathname;
-  const isInternal = name.startsWith("/s/internal/");
-  const localPath = path.join(storageRoot, name);
-  await mkdirp(path.dirname(localPath));
-  await Deno.writeTextFile(localPath, content);
-
-  if (isWatch || isInternal) {
-    return;
+    await this.client.putObject(name, content);
   }
 
-  await client.putObject(key, content);
+  public list() {
+    return this.client.listObjects();
+  }
+
+  public remove(name: string) {
+    return this.client.deleteObject(name);
+  }
 }
 
-function list() {
-  return client.listObjects();
-}
-
-async function remove(name: string) {
-  await Deno.remove(path.join(storageRoot, name)).catch(() => void 0);
-
-  return client.deleteObject(name);
-}
-
-export const storage = {
-  get,
-  set,
-  list,
-  remove,
-};
+export const storage = new Storage();

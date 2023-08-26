@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "https://esm.sh/@hookform/resolvers@3.3.0/zod";
+import CodeEditor from "https://esm.sh/@uiw/react-textarea-code-editor@2.1.7";
 import { useForm } from "https://esm.sh/react-hook-form@7.45.4?external=react";
 import * as z from "https://esm.sh/zod@3.22.2";
-import { lazy, useState } from "react";
+import { useState } from "react";
 import { api } from "../api.ts";
 import { Layout } from "../components/layout.tsx";
 import { Navbar } from "../components/navbar.tsx";
@@ -23,8 +24,6 @@ export const config = {
   interactive: true,
   layout: Layout,
 };
-
-const Editor = lazy(() => import("../components/editor.tsx"));
 
 const sample = `export default async function main({ message }: { message: string }) {
   console.log("hello");
@@ -82,38 +81,39 @@ export default function CreateBlockPage() {
       <Navbar />
 
       <section className="container h-screen py-20 ">
-        <div className="text-2xl mb-4">Create new block</div>
-
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex w-full gap-4 items-center mb-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mb-4">
+            <div className="flex justify-between">
+              <div className="text-2xl mb-4">Create new function</div>
+              <Button type="submit">Create</Button>
+            </div>
             <FormField
               control={form.control}
               name="module"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
+                <FormItem className="w-full">
                   <FormControl>
-                    <Input
-                      className="w-[500px]"
-                      placeholder="hello-world.ts"
-                      {...field}
-                    />
+                    <Input placeholder="hello-world.ts" {...field} />
                   </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            <Button type="submit">Create</Button>
           </form>
         </Form>
 
         <div className="h-[70%] pb-10">
-          <Editor value={source} onChange={setSource} />
+          <CodeEditor
+            value={source}
+            language="ts"
+            onChange={(event) => setSource(event.target.value)}
+            style={{
+              fontSize: 12,
+              fontFamily:
+                "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+            }}
+          />
         </div>
       </section>
     </>

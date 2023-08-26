@@ -1,5 +1,4 @@
 import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
-import { environment } from "./environment.ts";
 
 export const root = Deno.cwd();
 
@@ -8,9 +7,7 @@ export const blocksPath = path.join(root, "blocks");
 export const distBlocksPath = path.join(distPath, "blocks");
 
 function getHost() {
-  return environment.WATCH
-    ? "http://localhost:3000"
-    : "https://papyrus.berti.sh";
+  return "https://papyrus.sh";
 }
 
 export function getName(author: string, module: string, version = "") {

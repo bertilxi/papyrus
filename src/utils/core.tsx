@@ -177,12 +177,6 @@ interface GetBlockOptions {
   version?: string;
 }
 
-export function getBlock({ author, module, version }: GetBlockOptions) {
-  const name = getName(author, module, version);
-
-  return storage.get(name);
-}
-
 export async function guessBlock({ author, module, version }: GetBlockOptions) {
   const names = [
     getName(author, module + ".tsx", version),
@@ -192,14 +186,12 @@ export async function guessBlock({ author, module, version }: GetBlockOptions) {
   ];
 
   for (const name of names) {
-    const block = await storage.get(name);
+    const block = await storage.get(name).catch(() => void 0);
 
     if (block) {
       return block;
     }
   }
-
-  return "";
 }
 
 interface RunBlockOptions {

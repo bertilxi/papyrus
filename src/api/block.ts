@@ -1,5 +1,5 @@
 import * as path from "https://deno.land/std@0.198.0/path/mod.ts";
-import { serveStatic } from "https://deno.land/x/hono@v3.4.1/middleware.ts";
+import { serveStatic } from "https://deno.land/x/hono@v3.5.4/middleware.ts";
 import { blockService } from "../service/block.ts";
 import { guessBlock, runBlock } from "../utils/core.tsx";
 import { storage } from "../utils/storage.ts";
@@ -12,7 +12,7 @@ export function blockApi(app: App) {
 
     c.header("Content-Type", "text/javascript; charset=utf-8");
 
-    return c.text(await storage.get(getName(author, module, version)));
+    return c.body(await storage.get(getName(author, module, version)));
   });
 
   app.get("/run/*", async (c) => {
@@ -60,7 +60,7 @@ export function blockApi(app: App) {
     );
 
     const block = await blockService.findOne(author, module, version);
-    const source = await storage.get(getName(author, module, version));
+    const source = await storage.getText(getName(author, module, version));
 
     return c.json({
       ok: true,
@@ -98,7 +98,8 @@ export function blockApi(app: App) {
     if (!html) {
       return serveStatic({ root: "public" })(c, next);
     }
+    c.header("Content-Type", "text/html; charset=UTF-8");
 
-    return c.html(html);
+    return c.body(html);
   });
 }

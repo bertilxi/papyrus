@@ -6,8 +6,7 @@
     "react-dom/": "https://esm.sh/react-dom@18.2.0/",
 
     "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@4.32.6?external=react",
-
-    "lucide-react": "https://esm.sh/lucide-react@0.268.0?external=react",
+    "lucide-react": "https://esm.sh/lucide-react@0.269.0?external=react",
     "@clerk/clerk-react": "https://esm.sh/@clerk/clerk-react@4.23.2?external=react",
     "clsx": "https://esm.sh/clsx@2.0.0"
   }
